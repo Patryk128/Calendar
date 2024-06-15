@@ -6,7 +6,7 @@ import startOfWeek from "date-fns/startOfWeek";
 import getDay from "date-fns/getDay";
 import enUS from "date-fns/locale/en-US";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import { db } from "./firebase"; // Import Firestore configuration
+import { db } from "./firebase";
 import {
   collection,
   addDoc,
@@ -29,7 +29,6 @@ const localizer = dateFnsLocalizer({
 });
 
 const messages = {
-  allDay: "All Day",
   previous: "Previous",
   next: "Next",
   today: "Today",
@@ -40,8 +39,6 @@ const messages = {
   date: "Date",
   time: "Time",
   event: "Event",
-  noEventsInRange: "No events in range",
-  showMore: (total) => `+${total} more`,
 };
 
 const MyCalendar = () => {
@@ -53,64 +50,69 @@ const MyCalendar = () => {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const fetchEvents = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "events"));
-        const eventsList = querySnapshot.docs.map((doc) => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            ...data,
-            start:
-              data.start && data.start.toDate
-                ? data.start.toDate()
-                : data.start,
-            end: data.end && data.end.toDate ? data.end.toDate() : data.end,
-          };
+    const fetchEvents = () => {
+      getDocs(collection(db, "events"))
+        .then((querySnapshot) => {
+          const eventsList = querySnapshot.docs.map((doc) => {
+            const data = doc.data();
+            return {
+              id: doc.id,
+              ...data,
+              start:
+                data.start && data.start.toDate
+                  ? data.start.toDate()
+                  : data.start,
+              end: data.end && data.end.toDate ? data.end.toDate() : data.end,
+            };
+          });
+          setEvents(eventsList);
+        })
+        .catch((error) => {
+          console.error("Error fetching events: ", error);
         });
-        setEvents(eventsList);
-      } catch (error) {
-        console.error("Error fetching events: ", error);
-      }
     };
     fetchEvents();
   }, []);
 
-  const handleAddEvent = async () => {
-    if (!newEvent.title.trim()) {
+  const handleAddEvent = () => {
+    if (newEvent.title === "") {
       setError("Event title is required");
       return;
     }
-    try {
-      const eventToSave = {
-        ...newEvent,
-        start: newEvent.start,
-        end: newEvent.end,
-      };
-      const docRef = await addDoc(collection(db, "events"), eventToSave);
-      setEvents([...events, { ...eventToSave, id: docRef.id }]);
-      setNewEvent({ title: "", start: "", end: "" });
-      setModalIsOpen(false);
-      setSelectedDay(null); // Reset selectedDay after adding event
-      setError("");
-    } catch (error) {
-      console.error("Error adding event: ", error);
-    }
+
+    const eventToSave = {
+      ...newEvent,
+      start: newEvent.start,
+      end: newEvent.end,
+    };
+
+    addDoc(collection(db, "events"), eventToSave)
+      .then((docRef) => {
+        setEvents([...events, { ...eventToSave, id: docRef.id }]);
+        setNewEvent({ title: "", start: "", end: "" });
+        setModalIsOpen(false);
+        setSelectedDay(null);
+        setError("");
+      })
+      .catch((error) => {
+        console.error("Error adding event: ", error);
+      });
   };
 
-  const handleDeleteEvent = async (event) => {
-    try {
-      await deleteDoc(doc(db, "events", event.id));
-      setEvents(events.filter((e) => e.id !== event.id));
-    } catch (error) {
-      console.error("Error deleting event: ", error);
-    }
+  const handleDeleteEvent = (event) => {
+    deleteDoc(doc(db, "events", event.id))
+      .then(() => {
+        setEvents(events.filter((e) => e.id !== event.id));
+      })
+      .catch((error) => {
+        console.error("Error deleting event: ", error);
+      });
   };
 
   const handleSelectSlot = ({ start, end }) => {
-    setSelectedDay(start); // Set selected day in state
-    setModalIsOpen(true); // Open modal
-    setNewEvent({ title: "", start, end }); // Set new event with start and end date
+    setSelectedDay(start);
+    setModalIsOpen(true);
+    setNewEvent({ title: "", start, end });
   };
 
   const handleSelectEvent = (event) => {

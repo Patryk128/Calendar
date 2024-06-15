@@ -2,7 +2,6 @@ import React from "react";
 import Modal from "react-modal";
 import EventForm from "./EventForm";
 import format from "date-fns/format";
-import { enUS } from "date-fns/locale";
 
 const EventModal = ({
   modalIsOpen,
@@ -24,9 +23,9 @@ const EventModal = ({
       isOpen={modalIsOpen}
       onRequestClose={() => {
         setModalIsOpen(false);
-        setSelectedDay(null); // Reset selectedDay after closing modal
+        setSelectedDay(null);
         setSelectedEvent(null);
-        setError(""); // Reset error
+        setError("");
       }}
       contentLabel="Add Event"
       className="custom-modal"

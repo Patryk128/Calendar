@@ -12,7 +12,7 @@ const EventForm = ({
 }) => {
   return (
     <div>
-      <div className="form-group">
+      <div>
         <label>Event Title:</label>
         <input
           type="text"
@@ -24,7 +24,6 @@ const EventForm = ({
               setError("");
             }
           }}
-          className="form-control"
         />
       </div>
       {error && <div style={{ color: "red" }}>{error}</div>}
@@ -37,7 +36,6 @@ const EventForm = ({
         timeIntervals={15}
         dateFormat="MMMM d, yyyy h:mm aa"
         timeCaption="time"
-        className="form-control"
       />
       <DatePicker
         placeholderText="End Date"
@@ -48,7 +46,6 @@ const EventForm = ({
         timeIntervals={15}
         dateFormat="MMMM d, yyyy h:mm aa"
         timeCaption="time"
-        className="form-control"
       />
       <button onClick={handleAddEvent}>
         {selectedEvent ? "Update Event" : "Add Event"}
