@@ -143,7 +143,6 @@ const MyCalendar = () => {
         startAccessor="start"
         endAccessor="end"
         style={{ height: 500 }}
-        culture="en-US"
         messages={messages}
         selectable
         onSelectSlot={handleSelectSlot}
