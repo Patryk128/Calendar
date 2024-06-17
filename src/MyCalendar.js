@@ -12,6 +12,7 @@ import {
   addDoc,
   getDocs,
   deleteDoc,
+  updateDoc,
   doc,
 } from "firebase/firestore";
 import EventModal from "./EventModal";
@@ -80,6 +81,11 @@ const MyCalendar = () => {
       return;
     }
 
+    if (newEvent.start >= newEvent.end) {
+      setError("End date cannot be earlier than or equal to start date.");
+      return;
+    }
+
     const eventToSave = {
       ...newEvent,
       start: newEvent.start,
@@ -96,6 +102,43 @@ const MyCalendar = () => {
       })
       .catch((error) => {
         console.error("Error adding event: ", error);
+      });
+  };
+
+  const handleUpdateEvent = () => {
+    if (newEvent.title === "") {
+      setError("Event title is required");
+      return;
+    }
+
+    if (newEvent.start >= newEvent.end) {
+      setError("End date cannot be earlier than or equal to start date.");
+      return;
+    }
+
+    const updatedEvent = {
+      ...newEvent,
+      start: newEvent.start,
+      end: newEvent.end,
+    };
+
+    updateDoc(doc(db, "events", selectedEvent.id), updatedEvent)
+      .then(() => {
+        setEvents(
+          events.map((event) =>
+            event.id === selectedEvent.id
+              ? { ...updatedEvent, id: selectedEvent.id }
+              : event
+          )
+        );
+        setNewEvent({ title: "", start: "", end: "" });
+        setModalIsOpen(false);
+        setSelectedDay(null);
+        setSelectedEvent(null);
+        setError("");
+      })
+      .catch((error) => {
+        console.error("Error updating event: ", error);
       });
   };
 
@@ -118,6 +161,7 @@ const MyCalendar = () => {
   const handleSelectEvent = (event) => {
     setSelectedEvent(event);
     setModalIsOpen(true);
+    setNewEvent({ title: event.title, start: event.start, end: event.end });
   };
 
   return (
@@ -129,6 +173,7 @@ const MyCalendar = () => {
         newEvent={newEvent}
         setNewEvent={setNewEvent}
         handleAddEvent={handleAddEvent}
+        handleUpdateEvent={handleUpdateEvent}
         handleDeleteEvent={handleDeleteEvent}
         error={error}
         selectedEvent={selectedEvent}
@@ -142,7 +187,8 @@ const MyCalendar = () => {
         events={events}
         startAccessor="start"
         endAccessor="end"
-        style={{ height: 500 }}
+        style={{ height: "100vh" }}
+        className="calendar"
         messages={messages}
         selectable
         onSelectSlot={handleSelectSlot}

@@ -27,6 +27,8 @@ code {
   height: 400px;
   max-width: 90%;
   display: flex;
+  justify-content: center;
+  align-items: center;
   flex-direction: column;
   z-index: 4;
 
@@ -34,13 +36,7 @@ code {
     text-align: center;
   }
   div {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 15px;
-    align-items: center;
-
-    button {
+    .event-form-button {
       padding: 10px 25px;
       border: none;
       border-radius: 8px;
@@ -53,15 +49,85 @@ code {
     border-radius: 8px;
   }
 
-  button:hover {
+  .event-form-button:hover {
     cursor: pointer;
     background-color: lightgray;
   }
+}
+.close-button {
+  background-color: inherit;
+  font-size: 24px;
+  color: red;
+  position: absolute;
+  border: none;
+  top: 5px;
+  right: 5px;
+}
+.close-button:hover {
+  cursor: pointer;
+  background-color: aqua;
 }
 
 /* .custom-overlay {
   background-color: rgba(0, 0, 0, 0.5);
 } */
-.rbc-event {
-  background-color: chartreuse;
+
+.form__title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+.datepicker-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+}
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.del-button {
+  background-color: orangered;
+}
+.update-event {
+  background-color: yellow;
+}
+.add-event {
+  background-color: green;
+}
+.calendar {
+  height: 1000px;
+}
+.rbc-toolbar {
+  padding-top: 15px;
+  background-color: #f1f5f8;
+}
+.rbc-toolbar-label {
+  font-size: 36px;
+  background-color: #f1f5f8;
+}
+.rbc-btn-group {
+  padding: 15px;
+  background-color: #2764f1;
+  border: none;
+}
+.rbc-btn-group > button {
+  padding: 15px 25px;
+}
+.rbc-header {
+  padding: 10px 0 !important;
+}
+.rbc-day-bg {
+  background-color: #f1f5f8;
+}
+.rbc-off-range-bg {
+  background-color: grey;
 }
