@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import "./index.css";
 import MyCalendar from "./MyCalendar";
+import "./index.css";
 
 const App = () => (
   <div>

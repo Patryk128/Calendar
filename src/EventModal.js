@@ -10,7 +10,7 @@ const EventModal = ({
   newEvent,
   setNewEvent,
   handleAddEvent,
-  handleUpdateEvent, // Nowa funkcja do aktualizacji wydarzeń
+  handleUpdateEvent,
   handleDeleteEvent,
   error,
   selectedEvent,
@@ -71,7 +71,7 @@ const EventModal = ({
           newEvent={newEvent}
           setNewEvent={setNewEvent}
           handleAddEvent={handleAddEvent}
-          handleUpdateEvent={handleUpdateEvent} // Przekazujemy funkcję do formularza
+          handleUpdateEvent={handleUpdateEvent}
           error={error}
           setError={setError}
           selectedEvent={selectedEvent}

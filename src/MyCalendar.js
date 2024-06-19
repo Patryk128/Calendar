@@ -16,6 +16,7 @@ import {
   doc,
 } from "firebase/firestore";
 import EventModal from "./EventModal";
+import ReminderPopup from "./ReminderPopup";
 
 const locales = {
   "en-US": enUS,
@@ -44,11 +45,21 @@ const messages = {
 
 const MyCalendar = () => {
   const [events, setEvents] = useState([]);
-  const [newEvent, setNewEvent] = useState({ title: "", start: "", end: "" });
+  const [newEvent, setNewEvent] = useState({
+    title: "",
+    start: "",
+    end: "",
+    reminder: false,
+    reminderDays: 0,
+  });
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedDay, setSelectedDay] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [error, setError] = useState("");
+  const [reminderPopup, setReminderPopup] = useState({
+    isOpen: false,
+    event: null,
+  });
 
   useEffect(() => {
     const fetchEvents = () => {
@@ -75,6 +86,27 @@ const MyCalendar = () => {
     fetchEvents();
   }, []);
 
+  useEffect(() => {
+    const now = new Date();
+    events.forEach((event) => {
+      if (event.reminder) {
+        const reminderDate = new Date(event.start);
+        reminderDate.setDate(reminderDate.getDate() - event.reminderDays);
+
+        if (
+          reminderDate.getFullYear() === now.getFullYear() &&
+          reminderDate.getMonth() === now.getMonth() &&
+          reminderDate.getDate() === now.getDate()
+        ) {
+          setReminderPopup({
+            isOpen: true,
+            event,
+          });
+        }
+      }
+    });
+  }, [events]);
+
   const handleAddEvent = () => {
     if (newEvent.title === "") {
       setError("Event title is required");
@@ -95,7 +127,13 @@ const MyCalendar = () => {
     addDoc(collection(db, "events"), eventToSave)
       .then((docRef) => {
         setEvents([...events, { ...eventToSave, id: docRef.id }]);
-        setNewEvent({ title: "", start: "", end: "" });
+        setNewEvent({
+          title: "",
+          start: "",
+          end: "",
+          reminder: false,
+          reminderDays: 0,
+        });
         setModalIsOpen(false);
         setSelectedDay(null);
         setError("");
@@ -131,7 +169,13 @@ const MyCalendar = () => {
               : event
           )
         );
-        setNewEvent({ title: "", start: "", end: "" });
+        setNewEvent({
+          title: "",
+          start: "",
+          end: "",
+          reminder: false,
+          reminderDays: 0,
+        });
         setModalIsOpen(false);
         setSelectedDay(null);
         setSelectedEvent(null);
@@ -155,13 +199,32 @@ const MyCalendar = () => {
   const handleSelectSlot = ({ start, end }) => {
     setSelectedDay(start);
     setModalIsOpen(true);
-    setNewEvent({ title: "", start, end });
+    setNewEvent({
+      title: "",
+      start,
+      end,
+      reminder: false,
+      reminderDays: 0,
+    });
   };
 
   const handleSelectEvent = (event) => {
     setSelectedEvent(event);
     setModalIsOpen(true);
-    setNewEvent({ title: event.title, start: event.start, end: event.end });
+    setNewEvent({
+      title: event.title,
+      start: event.start,
+      end: event.end,
+      reminder: event.reminder || false,
+      reminderDays: event.reminderDays || 0,
+    });
+  };
+
+  const closeReminderPopup = () => {
+    setReminderPopup({
+      isOpen: false,
+      event: null,
+    });
   };
 
   return (
@@ -182,13 +245,18 @@ const MyCalendar = () => {
         setError={setError}
         locales={locales}
       />
+      {reminderPopup.isOpen && (
+        <ReminderPopup
+          event={reminderPopup.event}
+          closeReminderPopup={closeReminderPopup}
+        />
+      )}
       <Calendar
         localizer={localizer}
         events={events}
         startAccessor="start"
         endAccessor="end"
-        style={{ height: "100vh" }}
-        className="calendar"
+        style={{ height: 500 }}
         messages={messages}
         selectable
         onSelectSlot={handleSelectSlot}

@@ -32,6 +32,13 @@ code {
   flex-direction: column;
   z-index: 4;
 
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(9.2px);
+  -webkit-backdrop-filter: blur(9.2px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+
   h2 {
     text-align: center;
   }
@@ -47,6 +54,13 @@ code {
     padding: 10px 15px;
     border: none;
     border-radius: 8px;
+    /* From https://css.glass */
+    background: rgba(255, 255, 255, 1);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(9.2px);
+    -webkit-backdrop-filter: blur(9.2px);
+    border: 1px solid rgba(255, 255, 255, 1);
   }
 
   .event-form-button:hover {
@@ -57,7 +71,7 @@ code {
 .close-button {
   background-color: inherit;
   font-size: 24px;
-  color: red;
+  color: rgb(246, 72, 108);
   position: absolute;
   border: none;
   top: 5px;
@@ -65,12 +79,21 @@ code {
 }
 .close-button:hover {
   cursor: pointer;
-  background-color: aqua;
+  filter: drop-shadow(0 0 0.75rem rgb(246, 72, 108));
 }
 
 /* .custom-overlay {
   background-color: rgba(0, 0, 0, 0.5);
 } */
+.event-form-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  border: none;
+  background-color: rgb(58, 73, 222);
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
 
 .form__title {
   display: flex;
@@ -95,13 +118,13 @@ code {
 }
 
 .del-button {
-  background-color: orangered;
+  background-color: rgb(246, 72, 108);
 }
 .update-event {
-  background-color: yellow;
+  background-color: rgb(255, 175, 0);
 }
 .add-event {
-  background-color: green;
+  background-color: rgb(58, 73, 222);
 }
 .calendar {
   height: 1000px;
@@ -119,8 +142,10 @@ code {
   background-color: #2764f1;
   border: none;
 }
-.rbc-btn-group > button {
-  padding: 15px 25px;
+.rbc-btn-group {
+  button {
+    padding: 15px 25px;
+  }
 }
 .rbc-header {
   padding: 10px 0 !important;
@@ -130,4 +155,60 @@ code {
 }
 .rbc-off-range-bg {
   background-color: grey;
+}
+
+.popup-modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 300px;
+}
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  z-index: 4;
+}
+
+/* .close-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+} */
+
+.del-button {
+  background-color: rgb(246, 72, 108);
+}
+
+.popup-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.popup-body {
+  margin-top: 20px;
+}
+.rbc-event {
+  background-color: #7cb9e8;
+}
+.rbc-event .rbc-selected {
+  background-color: #000c18 !important;
 }

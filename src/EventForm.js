@@ -29,6 +29,11 @@ const EventForm = ({
     }
   };
 
+  const sameDay =
+    newEvent.start &&
+    newEvent.end &&
+    newEvent.start.toDateString() === newEvent.end.toDateString();
+
   return (
     <div>
       <div className="form__title">
@@ -68,12 +73,12 @@ const EventForm = ({
           dateFormat="MMMM d, yyyy h:mm"
           timeCaption="time"
           minDate={newEvent.start} // Block dates earlier than the start date
-          minTime={
-            newEvent.start &&
-            newEvent.start.toDateString() === newEvent.end.toDateString()
-              ? newEvent.start
-              : null
-          } // Block times earlier than the start time if the dates are the same
+          minTime={sameDay ? newEvent.start : new Date(0, 0, 0, 0, 0, 0)} // Block times earlier than the start time if the dates are the same
+          maxTime={
+            sameDay
+              ? new Date(0, 0, 0, 23, 59, 59)
+              : new Date(0, 0, 0, 23, 59, 59)
+          } // Set maxTime if the dates are the same
         />
         <button
           onClick={selectedEvent ? handleUpdateEvent : handleAddEvent}
