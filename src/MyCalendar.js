@@ -16,7 +16,7 @@ import {
   doc,
 } from "firebase/firestore";
 import EventModal from "./EventModal";
-import ReminderPopup from "./ReminderPopup";
+import Notification from "./Notification"; // Import the Notification component
 
 const locales = {
   "en-US": enUS,
@@ -33,7 +33,7 @@ const localizer = dateFnsLocalizer({
 const messages = {
   previous: "Previous",
   next: "Next",
-  today: "Today",
+  today: "Current",
   month: "Month",
   week: "Week",
   day: "Day",
@@ -56,10 +56,7 @@ const MyCalendar = () => {
   const [selectedDay, setSelectedDay] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [error, setError] = useState("");
-  const [reminderPopup, setReminderPopup] = useState({
-    isOpen: false,
-    event: null,
-  });
+  const [notification, setNotification] = useState(null); // State for notification
 
   useEffect(() => {
     const fetchEvents = () => {
@@ -93,14 +90,10 @@ const MyCalendar = () => {
         const reminderDate = new Date(event.start);
         reminderDate.setDate(reminderDate.getDate() - event.reminderDays);
 
-        if (
-          reminderDate.getFullYear() === now.getFullYear() &&
-          reminderDate.getMonth() === now.getMonth() &&
-          reminderDate.getDate() === now.getDate()
-        ) {
-          setReminderPopup({
-            isOpen: true,
-            event,
+        if (reminderDate <= now) {
+          setNotification({
+            message: `Reminder: ${event.title} is coming up in ${event.reminderDays} day(s).`,
+            type: "info",
           });
         }
       }
@@ -137,9 +130,17 @@ const MyCalendar = () => {
         setModalIsOpen(false);
         setSelectedDay(null);
         setError("");
+        setNotification({
+          message: "Event added successfully!",
+          type: "success",
+        });
       })
       .catch((error) => {
         console.error("Error adding event: ", error);
+        setNotification({
+          message: "Error adding event.",
+          type: "error",
+        });
       });
   };
 
@@ -180,9 +181,17 @@ const MyCalendar = () => {
         setSelectedDay(null);
         setSelectedEvent(null);
         setError("");
+        setNotification({
+          message: "Event updated successfully!",
+          type: "success",
+        });
       })
       .catch((error) => {
         console.error("Error updating event: ", error);
+        setNotification({
+          message: "Error updating event.",
+          type: "error",
+        });
       });
   };
 
@@ -190,22 +199,24 @@ const MyCalendar = () => {
     deleteDoc(doc(db, "events", event.id))
       .then(() => {
         setEvents(events.filter((e) => e.id !== event.id));
+        setNotification({
+          message: "Event deleted successfully!",
+          type: "success",
+        });
       })
       .catch((error) => {
         console.error("Error deleting event: ", error);
+        setNotification({
+          message: "Error deleting event.",
+          type: "error",
+        });
       });
   };
 
   const handleSelectSlot = ({ start, end }) => {
     setSelectedDay(start);
     setModalIsOpen(true);
-    setNewEvent({
-      title: "",
-      start,
-      end,
-      reminder: false,
-      reminderDays: 0,
-    });
+    setNewEvent({ title: "", start, end, reminder: false, reminderDays: 0 });
   };
 
   const handleSelectEvent = (event) => {
@@ -220,15 +231,19 @@ const MyCalendar = () => {
     });
   };
 
-  const closeReminderPopup = () => {
-    setReminderPopup({
-      isOpen: false,
-      event: null,
-    });
-  };
-
   return (
     <div>
+      <Calendar
+        localizer={localizer}
+        events={events}
+        startAccessor="start"
+        endAccessor="end"
+        style={{ height: 500 }}
+        selectable
+        onSelectSlot={handleSelectSlot}
+        onSelectEvent={handleSelectEvent}
+        messages={messages}
+      />
       <EventModal
         modalIsOpen={modalIsOpen}
         setModalIsOpen={setModalIsOpen}
@@ -245,23 +260,13 @@ const MyCalendar = () => {
         setError={setError}
         locales={locales}
       />
-      {reminderPopup.isOpen && (
-        <ReminderPopup
-          event={reminderPopup.event}
-          closeReminderPopup={closeReminderPopup}
+      {notification && (
+        <Notification
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
         />
       )}
-      <Calendar
-        localizer={localizer}
-        events={events}
-        startAccessor="start"
-        endAccessor="end"
-        style={{ height: 500 }}
-        messages={messages}
-        selectable
-        onSelectSlot={handleSelectSlot}
-        onSelectEvent={handleSelectEvent}
-      />
     </div>
   );
 };

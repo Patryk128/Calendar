@@ -139,22 +139,36 @@ code {
 }
 .rbc-btn-group {
   padding: 15px;
-  background-color: #2764f1;
   border: none;
-}
-.rbc-btn-group {
+
   button {
+    cursor: pointer;
     padding: 15px 25px;
+    border: none;
+    margin-right: 5px;
+    border-radius: 15px;
+    background-color: #85ffbd;
+  }
+  button:hover {
+    background-color: #85ffbd;
+    filter: brightness(95%);
   }
 }
+.rbc-active {
+  background-color: #85ffbd !important;
+  filter: brightness(80%);
+}
+
 .rbc-header {
   padding: 10px 0 !important;
 }
 .rbc-day-bg {
+  border: 1px solid lightblue;
   background-color: #f1f5f8;
 }
 .rbc-off-range-bg {
-  background-color: grey;
+  border: 1px solid gray;
+  background-color: lightgrey;
 }
 
 .popup-modal {
@@ -211,4 +225,36 @@ code {
 }
 .rbc-event .rbc-selected {
   background-color: #000c18 !important;
+}
+.rbc-toolbar,
+.rbc-toolbar-label {
+  background-color: #8ec5fc;
+}
+.notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #fff;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.notification.success {
+  border-color: green;
+}
+
+.notification.error {
+  border-color: red;
+}
+
+.notification button {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
 }
