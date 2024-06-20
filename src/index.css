@@ -261,3 +261,15 @@ code {
   background-color: rgb(246, 72, 108);
   margin-bottom: 15px;
 }
+.past-day {
+  background-color: red; /* Szary kolor tła dla przeszłych dni */
+}
+/* Styl dla przeszłych dni z aktualnego miesiąca */
+.rbc-day-bg.past-day {
+  background-color: purple; /* Szary kolor tła dla przeszłych dni */
+}
+
+/* Styl dla obecnego dnia */
+.rbc-day-bg.today {
+  background-color: #ffeb3b; /* Żółty kolor tła dla obecnego dnia */
+}

@@ -33,7 +33,7 @@ const localizer = dateFnsLocalizer({
 const messages = {
   previous: "Previous",
   next: "Next",
-  today: "Current",
+  today: "Today",
   month: "Month",
   week: "Week",
   day: "Day",
@@ -214,6 +214,17 @@ const MyCalendar = () => {
   };
 
   const handleSelectSlot = ({ start, end }) => {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0); // Zresetuj godziny, minuty, sekundy i milisekundy
+
+    if (start < now) {
+      setNotification({
+        message: "Cannot add events to past dates.",
+        type: "error",
+      });
+      return;
+    }
+
     setSelectedDay(start);
     setModalIsOpen(true);
     setNewEvent({ title: "", start, end, reminder: false, reminderDays: 0 });
@@ -231,6 +242,20 @@ const MyCalendar = () => {
     });
   };
 
+  const dayPropGetter = (date) => {
+    const today = new Date();
+    const isToday = date.setHours(0, 0, 0, 0) === today.setHours(0, 0, 0, 0);
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+    if (isToday) {
+      return { className: "today" };
+    } else if (date < today && date >= startOfMonth && date <= endOfMonth) {
+      return { className: "past-day" };
+    }
+    return {};
+  };
+
   return (
     <div>
       <Calendar
@@ -238,11 +263,12 @@ const MyCalendar = () => {
         events={events}
         startAccessor="start"
         endAccessor="end"
-        style={{ height: "100vh" }}
+        style={{ height: 500 }}
         selectable
         onSelectSlot={handleSelectSlot}
         onSelectEvent={handleSelectEvent}
         messages={messages}
+        dayPropGetter={dayPropGetter}
       />
       <EventModal
         modalIsOpen={modalIsOpen}
@@ -254,10 +280,10 @@ const MyCalendar = () => {
         handleUpdateEvent={handleUpdateEvent}
         handleDeleteEvent={handleDeleteEvent}
         error={error}
+        setError={setError}
         selectedEvent={selectedEvent}
         setSelectedDay={setSelectedDay}
-        setSelectedEvent={setSelectedEvent}
-        setError={setError}
+        setSelectedEvent={setSelectedEvent} // Upewnij się, że setSelectedEvent jest przekazywane
         locales={locales}
       />
       {notification && (
