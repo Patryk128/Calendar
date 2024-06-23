@@ -53,7 +53,6 @@ const EventModal = ({
       contentLabel="Add Event"
       className="custom-modal"
       overlayClassName="custom-overlay"
-      ariaHideApp={false}
       shouldCloseOnOverlayClick={true}
     >
       <div ref={modalRef} className="modal-content">

@@ -6,7 +6,8 @@ import startOfWeek from "date-fns/startOfWeek";
 import getDay from "date-fns/getDay";
 import enUS from "date-fns/locale/en-US";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import { db } from "./firebase";
+import { auth, db } from "./firebase";
+import { signOut } from "firebase/auth";
 import {
   collection,
   addDoc,
@@ -16,7 +17,7 @@ import {
   doc,
 } from "firebase/firestore";
 import EventModal from "./EventModal";
-import Notification from "./Notification"; // Import the Notification component
+import Notification from "./Notification";
 
 const locales = {
   "en-US": enUS,
@@ -25,7 +26,7 @@ const locales = {
 const localizer = dateFnsLocalizer({
   format,
   parse,
-  startOfWeek: (date, { locale }) => startOfWeek(date, { locale }),
+  startOfWeek: (date) => startOfWeek(date, { weekStartsOn: 1, locale: enUS }), // Start week on Monday
   getDay,
   locales,
 });
@@ -43,7 +44,7 @@ const messages = {
   event: "Event",
 };
 
-const MyCalendar = () => {
+const MyCalendar = ({ setIsLoggedIn }) => {
   const [events, setEvents] = useState([]);
   const [newEvent, setNewEvent] = useState({
     title: "",
@@ -56,7 +57,8 @@ const MyCalendar = () => {
   const [selectedDay, setSelectedDay] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [error, setError] = useState("");
-  const [notification, setNotification] = useState(null); // State for notification
+  const [notifications, setNotifications] = useState([]);
+  const [currentNotification, setCurrentNotification] = useState(null);
 
   useEffect(() => {
     const fetchEvents = () => {
@@ -85,20 +87,32 @@ const MyCalendar = () => {
 
   useEffect(() => {
     const now = new Date();
-    events.forEach((event) => {
-      if (event.reminder) {
+    const upcomingNotifications = events
+      .filter((event) => event.reminder)
+      .map((event) => {
         const reminderDate = new Date(event.start);
         reminderDate.setDate(reminderDate.getDate() - event.reminderDays);
+        const daysRemaining = Math.ceil(
+          (new Date(event.start) - now) / (1000 * 60 * 60 * 24)
+        );
+        return {
+          message: `Reminder: ${event.title} is coming up in ${daysRemaining} day(s).`,
+          type: "info",
+          reminderDate,
+        };
+      })
+      .filter((notification) => notification.reminderDate <= now)
+      .sort((a, b) => b.reminderDate - a.reminderDate);
 
-        if (reminderDate <= now) {
-          setNotification({
-            message: `Reminder: ${event.title} is coming up in ${event.reminderDays} day(s).`,
-            type: "info",
-          });
-        }
-      }
-    });
+    setNotifications(upcomingNotifications);
   }, [events]);
+
+  useEffect(() => {
+    if (!currentNotification && notifications.length > 0) {
+      setCurrentNotification(notifications[0]);
+      setNotifications(notifications.slice(1));
+    }
+  }, [notifications, currentNotification]);
 
   const handleAddEvent = () => {
     if (newEvent.title === "") {
@@ -130,17 +144,23 @@ const MyCalendar = () => {
         setModalIsOpen(false);
         setSelectedDay(null);
         setError("");
-        setNotification({
-          message: "Event added successfully!",
-          type: "success",
-        });
+        setNotifications((prevNotifications) => [
+          ...prevNotifications,
+          {
+            message: "Event added successfully!",
+            type: "success",
+          },
+        ]);
       })
       .catch((error) => {
         console.error("Error adding event: ", error);
-        setNotification({
-          message: "Error adding event.",
-          type: "error",
-        });
+        setNotifications((prevNotifications) => [
+          ...prevNotifications,
+          {
+            message: "Error adding event.",
+            type: "error",
+          },
+        ]);
       });
   };
 
@@ -181,17 +201,23 @@ const MyCalendar = () => {
         setSelectedDay(null);
         setSelectedEvent(null);
         setError("");
-        setNotification({
-          message: "Event updated successfully!",
-          type: "success",
-        });
+        setNotifications((prevNotifications) => [
+          ...prevNotifications,
+          {
+            message: "Event updated successfully!",
+            type: "success",
+          },
+        ]);
       })
       .catch((error) => {
         console.error("Error updating event: ", error);
-        setNotification({
-          message: "Error updating event.",
-          type: "error",
-        });
+        setNotifications((prevNotifications) => [
+          ...prevNotifications,
+          {
+            message: "Error updating event.",
+            type: "error",
+          },
+        ]);
       });
   };
 
@@ -199,29 +225,38 @@ const MyCalendar = () => {
     deleteDoc(doc(db, "events", event.id))
       .then(() => {
         setEvents(events.filter((e) => e.id !== event.id));
-        setNotification({
-          message: "Event deleted successfully!",
-          type: "success",
-        });
+        setNotifications((prevNotifications) => [
+          ...prevNotifications,
+          {
+            message: "Event deleted successfully!",
+            type: "success",
+          },
+        ]);
       })
       .catch((error) => {
         console.error("Error deleting event: ", error);
-        setNotification({
-          message: "Error deleting event.",
-          type: "error",
-        });
+        setNotifications((prevNotifications) => [
+          ...prevNotifications,
+          {
+            message: "Error deleting event.",
+            type: "error",
+          },
+        ]);
       });
   };
 
   const handleSelectSlot = ({ start, end }) => {
     const now = new Date();
-    now.setHours(0, 0, 0, 0); // Zresetuj godziny, minuty, sekundy i milisekundy
+    now.setHours(0, 0, 0, 0);
 
     if (start < now) {
-      setNotification({
-        message: "Cannot add events to past dates.",
-        type: "error",
-      });
+      setNotifications((prevNotifications) => [
+        ...prevNotifications,
+        {
+          message: "Cannot add events to past dates.",
+          type: "error",
+        },
+      ]);
       return;
     }
 
@@ -256,14 +291,38 @@ const MyCalendar = () => {
     return {};
   };
 
+  const handleLogout = () => {
+    signOut(auth)
+      .then(() => {
+        setIsLoggedIn(false);
+      })
+      .catch((error) => {
+        console.error("Error logging out: ", error);
+        setNotifications((prevNotifications) => [
+          ...prevNotifications,
+          {
+            message: "Error logging out. Please try again.",
+            type: "error",
+          },
+        ]);
+      });
+  };
+
+  const handleNotificationClose = () => {
+    setCurrentNotification(null);
+  };
+
   return (
     <div>
+      <button onClick={handleLogout} className="logout-button">
+        Logout
+      </button>
       <Calendar
         localizer={localizer}
         events={events}
         startAccessor="start"
         endAccessor="end"
-        style={{ height: 500 }}
+        style={{ height: "100vh" }}
         selectable
         onSelectSlot={handleSelectSlot}
         onSelectEvent={handleSelectEvent}
@@ -283,14 +342,14 @@ const MyCalendar = () => {
         setError={setError}
         selectedEvent={selectedEvent}
         setSelectedDay={setSelectedDay}
-        setSelectedEvent={setSelectedEvent} // Upewnij się, że setSelectedEvent jest przekazywane
+        setSelectedEvent={setSelectedEvent}
         locales={locales}
       />
-      {notification && (
+      {currentNotification && (
         <Notification
-          message={notification.message}
-          type={notification.type}
-          onClose={() => setNotification(null)}
+          message={currentNotification.message}
+          type={currentNotification.type}
+          onClose={handleNotificationClose}
         />
       )}
     </div>

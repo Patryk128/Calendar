@@ -1,22 +1,221 @@
-/* @import "~react-big-calendar/lib/css/react-big-calendar.css";
+@import "~react-big-calendar/lib/css/react-big-calendar.css";
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
 
 .custom-modal {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: white;
-  padding: 20px;
+  background-color: rgb(222, 235, 235);
+  padding: 40px 20px;
   border-radius: 8px;
+  border: none;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   width: 400px;
+  height: 400px;
   max-width: 90%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  z-index: 4;
+
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(9.2px);
+  -webkit-backdrop-filter: blur(9.2px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+
+  h2 {
+    text-align: center;
+  }
+  div {
+    .event-form-button {
+      padding: 10px 25px;
+      border: none;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+  }
+  input {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 1);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(9.2px);
+    -webkit-backdrop-filter: blur(9.2px);
+    border: 1px solid rgba(255, 255, 255, 1);
+  }
+
+  .event-form-button:hover {
+    cursor: pointer;
+    background-color: lightgray;
+  }
+}
+.close-button {
+  background-color: inherit;
+  font-size: 24px;
+  color: rgb(246, 72, 108);
+  position: absolute;
+  border: none;
+  top: 5px;
+  right: 5px;
+}
+.close-button:hover {
+  cursor: pointer;
+  filter: drop-shadow(0 0 0.75rem rgb(246, 72, 108));
 }
 
-.custom-overlay {
-  background-color: rgba(0, 0, 0, 0.5);
+.event-form-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  border: none;
+  background-color: rgb(58, 73, 222);
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-.ReactModalPortal {
-  background-color: lightblue;
-} */
+.form__title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+.datepicker-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+}
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.update-event {
+  background-color: rgb(255, 175, 0);
+  margin-bottom: 0;
+}
+.add-event {
+  background-color: rgb(58, 73, 222);
+}
+.calendar {
+  height: 1000px;
+}
+
+.popup-modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 300px;
+}
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  z-index: 4;
+}
+
+.del-button {
+  background-color: rgb(246, 72, 108);
+}
+
+.popup-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.popup-body {
+  margin-top: 20px;
+}
+
+.notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #fff;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.notification.success {
+  border-color: green;
+}
+
+.notification.error {
+  border-color: red;
+}
+
+.notification button {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.del-button {
+  background-color: rgb(246, 72, 108);
+  margin-bottom: 15px;
+}
+.past-day {
+  background-color: red;
+}
+.logout-button {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.logout-button:hover {
+  background-color: #d32f2f;
+}
