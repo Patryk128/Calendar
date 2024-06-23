@@ -21,6 +21,7 @@ const EventModal = ({
 }) => {
   const modalRef = useRef();
 
+  // zamykanie modala
   const closeModal = useCallback(() => {
     setModalIsOpen(false);
     setSelectedDay(null);
@@ -28,6 +29,7 @@ const EventModal = ({
     setError("");
   }, [setModalIsOpen, setSelectedDay, setSelectedEvent, setError]);
 
+  // kliknięcie za modalem
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (modalRef.current && !modalRef.current.contains(event.target)) {

@@ -26,7 +26,7 @@ const locales = {
 const localizer = dateFnsLocalizer({
   format,
   parse,
-  startOfWeek: (date) => startOfWeek(date, { weekStartsOn: 1, locale: enUS }), // Start week on Monday
+  startOfWeek: (date) => startOfWeek(date, { weekStartsOn: 1, locale: enUS }),
   getDay,
   locales,
 });
@@ -61,6 +61,7 @@ const MyCalendar = ({ setIsLoggedIn }) => {
   const [currentNotification, setCurrentNotification] = useState(null);
 
   useEffect(() => {
+    // pobieranie wydarzeń
     const fetchEvents = () => {
       getDocs(collection(db, "events"))
         .then((querySnapshot) => {
@@ -86,6 +87,7 @@ const MyCalendar = ({ setIsLoggedIn }) => {
   }, []);
 
   useEffect(() => {
+    // przypomnienia
     const now = new Date();
     const upcomingNotifications = events
       .filter((event) => event.reminder)
@@ -108,12 +110,14 @@ const MyCalendar = ({ setIsLoggedIn }) => {
   }, [events]);
 
   useEffect(() => {
+    // wyświetlanie powiadomień
     if (!currentNotification && notifications.length > 0) {
       setCurrentNotification(notifications[0]);
       setNotifications(notifications.slice(1));
     }
   }, [notifications, currentNotification]);
 
+  // dodawanie wydarzeń
   const handleAddEvent = () => {
     if (newEvent.title === "") {
       setError("Event title is required");
@@ -164,6 +168,7 @@ const MyCalendar = ({ setIsLoggedIn }) => {
       });
   };
 
+  // update wydarzen
   const handleUpdateEvent = () => {
     if (newEvent.title === "") {
       setError("Event title is required");
@@ -221,6 +226,7 @@ const MyCalendar = ({ setIsLoggedIn }) => {
       });
   };
 
+  // usuwanie wydarzeń
   const handleDeleteEvent = (event) => {
     deleteDoc(doc(db, "events", event.id))
       .then(() => {
@@ -245,6 +251,7 @@ const MyCalendar = ({ setIsLoggedIn }) => {
       });
   };
 
+  // pojedynczy dzień
   const handleSelectSlot = ({ start, end }) => {
     const now = new Date();
     now.setHours(0, 0, 0, 0);
@@ -265,6 +272,7 @@ const MyCalendar = ({ setIsLoggedIn }) => {
     setNewEvent({ title: "", start, end, reminder: false, reminderDays: 0 });
   };
 
+  // wybór wydarzenia
   const handleSelectEvent = (event) => {
     setSelectedEvent(event);
     setModalIsOpen(true);
@@ -277,6 +285,7 @@ const MyCalendar = ({ setIsLoggedIn }) => {
     });
   };
 
+  // stylowanie dni
   const dayPropGetter = (date) => {
     const today = new Date();
     const isToday = date.setHours(0, 0, 0, 0) === today.setHours(0, 0, 0, 0);
@@ -291,6 +300,7 @@ const MyCalendar = ({ setIsLoggedIn }) => {
     return {};
   };
 
+  // wylogowywanie
   const handleLogout = () => {
     signOut(auth)
       .then(() => {
@@ -308,6 +318,7 @@ const MyCalendar = ({ setIsLoggedIn }) => {
       });
   };
 
+  // zamykanie powiadomień
   const handleNotificationClose = () => {
     setCurrentNotification(null);
   };

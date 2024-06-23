@@ -11,6 +11,7 @@ const EventForm = ({
   setError,
   selectedEvent,
 }) => {
+  // data rozpoczęcia
   const handleStartDateChange = (start) => {
     setNewEvent({ ...newEvent, start });
     if (newEvent.end && start > newEvent.end) {
@@ -20,6 +21,7 @@ const EventForm = ({
     }
   };
 
+  // data zakończenia
   const handleEndDateChange = (end) => {
     setNewEvent({ ...newEvent, end });
     if (newEvent.start && end < newEvent.start) {
@@ -67,13 +69,13 @@ const EventForm = ({
           timeIntervals={60}
           dateFormat="MMMM d, yyyy h:mm"
           timeCaption="time"
-          minDate={newEvent.start} // Block dates earlier than the start date
+          minDate={newEvent.start}
           minTime={
             newEvent.start &&
             newEvent.start.toDateString() === newEvent.end.toDateString()
               ? newEvent.start
               : null
-          } // Block times earlier than the start time if the dates are the same
+          }
         />
         <div className="reminder-wrapper">
           <label>
