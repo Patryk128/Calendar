@@ -34,7 +34,7 @@ const localizer = dateFnsLocalizer({
 const messages = {
   previous: "Previous",
   next: "Next",
-  today: "Today",
+  today: "Current",
   month: "Month",
   week: "Week",
   day: "Day",

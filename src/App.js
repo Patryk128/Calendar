@@ -9,7 +9,7 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const authState = onAuthStateChanged(auth, (user) => {
       if (user) {
         setIsLoggedIn(true);
       } else {
@@ -17,7 +17,7 @@ function App() {
       }
     });
 
-    return () => unsubscribe();
+    return () => authState();
   }, []);
 
   return (
