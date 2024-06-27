@@ -90,7 +90,7 @@ const MyCalendar = ({ setIsLoggedIn }) => {
     // przypomnienia
     const now = new Date();
     const upcomingNotifications = events
-      .filter((event) => event.reminder)
+      .filter((event) => event.reminder && new Date(event.start) >= now)
       .map((event) => {
         const reminderDate = new Date(event.start);
         reminderDate.setDate(reminderDate.getDate() - event.reminderDays);
