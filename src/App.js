@@ -3,7 +3,6 @@ import { auth } from "./firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import MyCalendar from "./MyCalendar";
 import Login from "./Login";
-import "./App.css";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -21,13 +20,13 @@ function App() {
   }, []);
 
   return (
-    <div className="App">
+    <>
       {isLoggedIn ? (
         <MyCalendar setIsLoggedIn={setIsLoggedIn} />
       ) : (
         <Login setIsLoggedIn={setIsLoggedIn} />
       )}
-    </div>
+    </>
   );
 }
 

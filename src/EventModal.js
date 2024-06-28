@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback } from "react";
+import React, { useEffect } from "react";
 import Modal from "react-modal";
 import EventForm from "./EventForm";
 import format from "date-fns/format";
@@ -19,20 +19,17 @@ const EventModal = ({
   setError,
   locales,
 }) => {
-  const modalRef = useRef();
-
-  // zamykanie modala
-  const closeModal = useCallback(() => {
-    setModalIsOpen(false);
-    setSelectedDay(null);
-    setSelectedEvent(null);
-    setError("");
-  }, [setModalIsOpen, setSelectedDay, setSelectedEvent, setError]);
-
   // kliknięcie za modalem
   useEffect(() => {
+    const closeModal = () => {
+      setModalIsOpen(false);
+      setSelectedDay(null);
+      setSelectedEvent(null);
+      setError("");
+    };
+
     const handleClickOutside = (event) => {
-      if (modalRef.current && !modalRef.current.contains(event.target)) {
+      if (modalIsOpen && !event.target.closest(".modal-content")) {
         closeModal();
       }
     };
@@ -46,7 +43,14 @@ const EventModal = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [modalIsOpen, closeModal]);
+  }, [modalIsOpen, setModalIsOpen, setSelectedDay, setSelectedEvent, setError]);
+
+  const closeModal = () => {
+    setModalIsOpen(false);
+    setSelectedDay(null);
+    setSelectedEvent(null);
+    setError("");
+  };
 
   return (
     <Modal
@@ -57,7 +61,7 @@ const EventModal = ({
       overlayClassName="custom-overlay"
       shouldCloseOnOverlayClick={true}
     >
-      <div ref={modalRef} className="modal-content">
+      <div className="modal-content">
         <div className="modal-header">
           <h2>
             {selectedEvent ? "Edit Event" : "Add Event"} for{" "}
