@@ -36,8 +36,6 @@ const EventModal = ({
 
     if (modalIsOpen) {
       document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
@@ -45,6 +43,7 @@ const EventModal = ({
     };
   }, [modalIsOpen, setModalIsOpen, setSelectedDay, setSelectedEvent, setError]);
 
+  // zamykanie modala
   const closeModal = () => {
     setModalIsOpen(false);
     setSelectedDay(null);
@@ -64,7 +63,7 @@ const EventModal = ({
       <div className="modal-content">
         <div className="modal-header">
           <h2>
-            {selectedEvent ? "Edit Event" : "Add Event"} for{" "}
+            {selectedEvent ? "Edit Event" : "Add Event"}{" "}
             {selectedDay &&
               format(selectedDay, "MMMM d, yyyy", { locale: locales["en-US"] })}
           </h2>
