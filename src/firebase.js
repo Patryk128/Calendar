@@ -3,7 +3,7 @@ import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCKYKhwSDwyL356mju8g9OHlFy3k5qIyAc",
+  apiKey: process.env.REACT_APP_APP_ID,
   authDomain: "calendar-5ca33.firebaseapp.com",
   databaseURL: "https://calendar-5ca33-default-rtdb.firebaseio.com",
   projectId: "calendar-5ca33",
