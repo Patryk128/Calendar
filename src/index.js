@@ -7,6 +7,7 @@ import "./ReactBigCalendar.css";
 import "./App.css";
 import "./Buttons.css";
 import "./Popup.css";
+import "./EventForm.css"
 
 initializeApp(firebaseConfig);
 

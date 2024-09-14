@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -11,20 +11,65 @@ const EventForm = ({
   setError,
   selectedEvent,
 }) => {
-  // data rozpoczęcia
-  const handleStartDateChange = (start) => {
-    setNewEvent({ ...newEvent, start });
-    if (newEvent.end && start > newEvent.end) {
-      setError("Start date cannot be later than end date.");
+  const [initialLoad, setInitialLoad] = useState(true);
+  const today = new Date();
+
+  useEffect(() => {
+    if (initialLoad && !newEvent.start) {
+      const now = new Date();
+      setNewEvent({
+        ...newEvent,
+        start: now,
+        end: now,
+      });
+      setInitialLoad(false);
+    }
+  }, [newEvent, setNewEvent, initialLoad]);
+
+  // Ustawienie daty rozpoczęcia
+  const handleStartDateChange = (date) => {
+    const updatedStart = new Date(newEvent.start);
+    updatedStart.setFullYear(date.getFullYear());
+    updatedStart.setMonth(date.getMonth());
+    updatedStart.setDate(date.getDate());
+
+    setNewEvent({ ...newEvent, start: updatedStart });
+    setError("");
+  };
+
+  // Ustawienie godziny rozpoczęcia przez wpisanie ręczne
+  const handleStartTimeInputChange = (e) => {
+    const time = e.target.value.split(":"); // Rozdziel godziny i minuty
+    const updatedStart = new Date(newEvent.start);
+    updatedStart.setHours(parseInt(time[0]), parseInt(time[1]));
+
+    setNewEvent({ ...newEvent, start: updatedStart });
+    setError("");
+  };
+
+  // Ustawienie daty zakończenia
+  const handleEndDateChange = (date) => {
+    const updatedEnd = new Date(newEvent.end);
+    updatedEnd.setFullYear(date.getFullYear());
+    updatedEnd.setMonth(date.getMonth());
+    updatedEnd.setDate(date.getDate());
+
+    setNewEvent({ ...newEvent, end: updatedEnd });
+    if (newEvent.start && updatedEnd < new Date(newEvent.start)) {
+      setError("End date cannot be earlier than start date.");
     } else {
       setError("");
     }
   };
 
-  // data zakończenia
-  const handleEndDateChange = (end) => {
-    setNewEvent({ ...newEvent, end });
-    if (newEvent.start && end < newEvent.start) {
+  // Ustawienie godziny zakończenia przez wpisanie ręczne
+  const handleEndTimeInputChange = (e) => {
+    const time = e.target.value.split(":"); // Rozdziel godziny i minuty
+    const updatedEnd = new Date(newEvent.end);
+    updatedEnd.setHours(parseInt(time[0]), parseInt(time[1]));
+
+    setNewEvent({ ...newEvent, end: updatedEnd });
+    if (newEvent.start && updatedEnd < new Date(newEvent.start)) {
       setError("End date cannot be earlier than start date.");
     } else {
       setError("");
@@ -50,33 +95,53 @@ const EventForm = ({
       {error && <div style={{ color: "red" }}>{error}</div>}
 
       <div className="datepicker-wrapper">
-        <DatePicker
-          placeholderText="Start Date"
-          selected={newEvent.start}
-          onChange={handleStartDateChange}
-          showTimeSelect
-          timeFormat="HH:mm"
-          timeIntervals={60}
-          dateFormat="MMMM d, yyyy h:mm"
-          timeCaption="time"
-        />
-        <DatePicker
-          placeholderText="End Date"
-          selected={newEvent.end}
-          onChange={handleEndDateChange}
-          showTimeSelect
-          timeFormat="HH:mm"
-          timeIntervals={60}
-          dateFormat="MMMM d, yyyy h:mm"
-          timeCaption="time"
-          minDate={newEvent.start}
-          minTime={
-            newEvent.start &&
-            newEvent.start.toDateString() === newEvent.end.toDateString()
-              ? newEvent.start
-              : null
-          }
-        />
+        {/* Wrapper for Start Date and Time */}
+        <div className="date-time-wrapper">
+          {/* Date Input for Start Date */}
+          <div>
+            <label>Start Date:</label>
+            <DatePicker
+              selected={newEvent.start}
+              onChange={handleStartDateChange}
+              dateFormat="MMMM d, yyyy"
+            />
+          </div>
+
+          {/* Time Input for Start Time (manual input) */}
+          <div>
+            <label>Start Time:</label>
+            <input
+              type="time"
+              value={newEvent.start ? newEvent.start.toTimeString().slice(0, 5) : ""}
+              onChange={handleStartTimeInputChange}
+            />
+          </div>
+        </div>
+
+        {/* Wrapper for End Date and Time */}
+        <div className="date-time-wrapper">
+          {/* Date Input for End Date */}
+          <div>
+            <label>End Date:</label>
+            <DatePicker
+              selected={newEvent.end}
+              onChange={handleEndDateChange}
+              dateFormat="MMMM d, yyyy"
+              minDate={newEvent.start}
+            />
+          </div>
+
+          {/* Time Input for End Time (manual input) */}
+          <div>
+            <label>End Time:</label>
+            <input
+              type="time"
+              value={newEvent.end ? newEvent.end.toTimeString().slice(0, 5) : ""}
+              onChange={handleEndTimeInputChange}
+            />
+          </div>
+        </div>
+
         <div className="reminder-wrapper">
           <label>
             <input

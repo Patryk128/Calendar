@@ -1,0 +1,38 @@
+.date-time-wrapper {
+  display: flex;
+  gap: 10px; /* Odstęp między inputami */
+  align-items: center;
+  margin-bottom: 10px; /* Odstęp pod każdym wierszem */
+}
+
+.date-time-wrapper label {
+  margin-right: 5px;
+}
+
+.datepicker-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.event-form-button {
+  margin-top: 20px;
+}
+.date-time-wrapper {
+  display: flex;
+  gap: 10px; /* Odstęp między inputami */
+  align-items: center;
+  margin-bottom: 10px; /* Odstęp pod każdym wierszem */
+}
+
+.date-time-wrapper label {
+  margin-right: 5px;
+}
+
+.datepicker-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.event-form-button {
+  margin-top: 20px;
+}
