@@ -1,9 +1,31 @@
 import React, { useEffect } from "react";
 import Modal from "react-modal";
-import EventForm from "./EventForm";
-import format from "date-fns/format";
+import EventForm from "./EventForm.tsx";
+import moment from "moment";
 
-const EventModal = ({
+interface EventModalProps {
+  modalIsOpen: boolean;
+  setModalIsOpen: (isOpen: boolean) => void;
+  selectedDay: Date | null;
+  newEvent: {
+    title: string;
+    start: Date | null;
+    end: Date | null;
+    reminder: boolean;
+    reminderDays: number;
+  };
+  setNewEvent: (event: any) => void;
+  handleAddEvent: () => void;
+  handleUpdateEvent: () => void;
+  handleDeleteEvent: (event: any) => void;
+  error: string;
+  selectedEvent: any;
+  setSelectedDay: (day: Date | null) => void;
+  setSelectedEvent: (event: any) => void;
+  setError: (error: string) => void;
+}
+
+const EventModal: React.FC<EventModalProps> = ({
   modalIsOpen,
   setModalIsOpen,
   selectedDay,
@@ -17,7 +39,6 @@ const EventModal = ({
   setSelectedDay,
   setSelectedEvent,
   setError,
-  locales,
 }) => {
   // kliknięcie za modalem
   useEffect(() => {
@@ -28,8 +49,11 @@ const EventModal = ({
       setError("");
     };
 
-    const handleClickOutside = (event) => {
-      if (modalIsOpen && !event.target.closest(".modal-content")) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        modalIsOpen &&
+        !(event.target as HTMLElement).closest(".modal-content")
+      ) {
         closeModal();
       }
     };
@@ -64,8 +88,7 @@ const EventModal = ({
         <div className="modal-header">
           <h2>
             {selectedEvent ? "Edit Event" : "Add Event"}{" "}
-            {selectedDay &&
-              format(selectedDay, "MMMM d, yyyy", { locale: locales["en-US"] })}
+            {selectedDay && moment(selectedDay).format("MMMM D, YYYY")}
           </h2>
           <button className="close-button" onClick={closeModal}>
             x

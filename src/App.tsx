@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { auth } from "./firebase";
-import { onAuthStateChanged } from "firebase/auth";
-import MyCalendar from "./MyCalendar";
-import Login from "./Login";
+import { auth } from "./firebase.tsx";
+import { onAuthStateChanged, User } from "firebase/auth";
+import MyCalendar from "./MyCalendar.tsx";
+import Login from "./Login.tsx";
 
-function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+const App: React.FC = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   useEffect(() => {
-    const authState = onAuthStateChanged(auth, (user) => {
+    const authState = onAuthStateChanged(auth, (user: User | null) => {
       if (user) {
         setIsLoggedIn(true);
       } else {
@@ -28,6 +28,6 @@ function App() {
       )}
     </>
   );
-}
+};
 
 export default App;

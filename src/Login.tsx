@@ -1,18 +1,24 @@
 import React, { useState } from "react";
-import { auth } from "./firebase";
+import { auth } from "./firebase.tsx";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
 } from "firebase/auth";
 import "./Login.css";
 
-const Login = ({ setIsLoggedIn }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [isLogin, setIsLogin] = useState(true);
+// Type definition for props
+interface LoginProps {
+  setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
-  const handleLogin = (e) => {
+const Login: React.FC<LoginProps> = ({ setIsLoggedIn }) => {
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string>("");
+  const [isLogin, setIsLogin] = useState<boolean>(true);
+
+  // Handle login functionality
+  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     signInWithEmailAndPassword(auth, email, password)
       .then(() => {
@@ -24,7 +30,8 @@ const Login = ({ setIsLoggedIn }) => {
       });
   };
 
-  const handleRegister = (e) => {
+  // Handle registration functionality
+  const handleRegister = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     createUserWithEmailAndPassword(auth, email, password)
       .then(() => {
